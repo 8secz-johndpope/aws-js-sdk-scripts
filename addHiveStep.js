@@ -2,7 +2,7 @@
 
 let AWS = require('aws-sdk');
 const exec = require('child_process').exec;
-let awsUtil = require('./awsUtil');
+let awsUtil = require('./lib/awsUtil');
 
 AWS.config.update({ region: 'us-east-1' });
 
