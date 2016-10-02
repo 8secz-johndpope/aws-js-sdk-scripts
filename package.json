@@ -1,0 +1,11 @@
+{
+  "name": "EMR-dynamic-scripts",
+  "version": "1.0.0",
+  "description": "some scripts to be run on RC EMR cluster",
+  "license": "ISC",
+  "author": "Han Li",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "*"
+  }
+}
