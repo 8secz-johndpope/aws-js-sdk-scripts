@@ -10,7 +10,7 @@ let emr = new AWS.EMR();
 let args = process.argv.slice(2);
 //the first argument should be the notify email and 2nd be the ELB name to be binded;
 let notifyEmail = args[0];
-let elbName = arg[1];
+let elbName = args[1];
 
 const RC_CLUSTER_NAME = 'RC.HIVE.ADHOC';
 
@@ -31,10 +31,16 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
             console.log(`New cluster created, ID: ${newClusterId}`);
             sendBeginEmail(newClusterId);
             let waitCluster = setInterval(() => {
-                awsUtil.getActiveClusterId(RC_CLUSTER_NAME).then((cid) => {
-                    if (cid) {
+                awsUtil.getClusterState(newClusterId).then((state) => {
+                    if (state && state === 'WAITING') {
                         clearInterval(waitCluster);
-                        //TODO (1)listInstances to get the master node instance ID (2)use elb API to register-instances-with-load-balancer for the master. 
+                        console.log(`Cluster Ready, trying to get Master instance ID for ${newClusterId}`);
+                        awsUtil.getEmrMaster(newClusterId).then((masterId) => {
+                            console.log(`retrieved Master instance ID: ${masterId}. Start to bind to elb: ${elbName}`);
+                            awsUtil.regElbInstance(masterId, elbName);
+                        })
+                    } else {
+                        console.log(`Current state is: ${state}, waiting another 30s for cluster ${newClusterId} to be Ready...`);
                     }
                 })
             }, 30000);
@@ -52,7 +58,7 @@ function sendBeginEmail(clusterId) {
             console.error(`exec error: ${error}`);
             return;
         }
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
+        if(stdout) console.log(`stdout: ${stdout}`);
+        if(stderr) console.log(`stderr: ${stderr}`);
     });
 }
