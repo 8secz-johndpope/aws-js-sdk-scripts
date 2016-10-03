@@ -15,7 +15,7 @@ let shellFile = args[1];
 const RC_CLUSTER_NAME = 'RC.HIVE.ADHOC';
 
 //first get cluster id and s3 bucket prefix so that we can add step.
-Promise.all([awsUtil.getClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBucket()]).then((values) => {
+Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBucket()]).then((values) => {
 	let clusterId = values[0];
 	let bucketName = values[1];
 	const env = awsUtil.getEnvFromBucketName(bucketName);
