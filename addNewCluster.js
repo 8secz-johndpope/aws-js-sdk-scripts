@@ -6,14 +6,15 @@ let awsUtil = require('./lib/awsUtil');
 AWS.config.update({ region: 'us-east-1' });
 
 let emr = new AWS.EMR();
+let envConfig = require('./profile/envConfig');
 
 let args = process.argv.slice(2);
 //the first argument should be the notify email and 2nd be the ELB name to be binded;
 let notifyEmail = args[0];
-let elbName = args[1];
 
-const RC_CLUSTER_NAME = 'RC.HIVE.ADHOC';
+const RC_CLUSTER_NAME = envConfig.shared.clusterName;
 
+let envParams = {};
 
 Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBucket()]).then(
     (values) => {
@@ -23,7 +24,8 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
             console.log(`Cluster ${RC_CLUSTER_NAME} already exist! Quit`);
         } else {
             const env = awsUtil.getEnvFromBucketName(bucketName);
-            return awsUtil.createCluster(RC_CLUSTER_NAME);
+            envParams = require('./profile/envConfig')[env];
+            return awsUtil.createCluster(envParams);
         }
     }).then(
     (newClusterId) => {
@@ -36,8 +38,8 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
                         clearInterval(waitCluster);
                         console.log(`Cluster Ready, trying to get Master instance ID for ${newClusterId}`);
                         awsUtil.getEmrMaster(newClusterId).then((masterId) => {
-                            console.log(`retrieved Master instance ID: ${masterId}. Start to bind to elb: ${elbName}`);
-                            awsUtil.regElbInstance(masterId, elbName);
+                            console.log(`retrieved Master instance ID: ${masterId}. Start to bind to elb: ${envParams.elbName}`);
+                            awsUtil.regElbInstance(masterId, envParams.elbName);
                         })
                     } else {
                         console.log(`Current state is: ${state}, waiting another 30s for cluster ${newClusterId} to be Ready...`);
