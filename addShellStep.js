@@ -8,7 +8,7 @@ AWS.config.update({ region: 'us-east-1' });
 let emr = new AWS.EMR();
 
 let args = process.argv.slice(2);
-//the first argument should be the stepName and 2nd be the hql file name;
+//the first argument should be the stepName and 2nd be the shell file name;
 let stepName = args[0];
 let shellFile = args[1];
 
@@ -41,6 +41,4 @@ Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBuck
 		if (err) console.log(err, err.stack); // an error occurred
 		else     console.log(data);           // successful response
 	});
-
-
 });

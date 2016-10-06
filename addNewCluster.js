@@ -37,10 +37,13 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
                     if (state && state === 'WAITING') {
                         clearInterval(waitCluster);
                         console.log(`Cluster Ready, trying to get Master instance ID for ${newClusterId}`);
+                        //attach ELB
                         awsUtil.getEmrMaster(newClusterId).then((masterId) => {
                             console.log(`retrieved Master instance ID: ${masterId}. Start to bind to elb: ${envParams.elbName}`);
                             awsUtil.regElbInstance(masterId, envParams.elbName);
-                        })
+                        });
+                        let fileLocation = envParams.RcS3StageDir + '/RC/' + envParams.env + '/hive-scripts/startHive.sh';
+                        awsUtil.addShellStep(newClusterId, fileLocation, 'Start Hive Server2');
                     } else {
                         console.log(`Current state is: ${state}, waiting another 30s for cluster ${newClusterId} to be Ready...`);
                     }
@@ -60,7 +63,7 @@ function sendBeginEmail(clusterId) {
             console.error(`exec error: ${error}`);
             return;
         }
-        if(stdout) console.log(`stdout: ${stdout}`);
-        if(stderr) console.log(`stderr: ${stderr}`);
+        if (stdout) console.log(`stdout: ${stdout}`);
+        if (stderr) console.log(`stderr: ${stderr}`);
     });
 }
