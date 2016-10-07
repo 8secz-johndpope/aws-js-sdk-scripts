@@ -17,6 +17,7 @@ envConfig.QA.Ec2KeyName = 'APP_RC_QA';
 envConfig.QA.RcS3StageDir = 's3://1422-4800-0760-application-qa-staging';
 envConfig.QA.Ec2SubnetId = 'subnet-80ec0ff7';
 envConfig.QA.elbName = 'AWSLBRCEQ01';
+envConfig.QA.coreInstanceCount = 8;
 
 envConfig.DEV.env = 'DEV';
 envConfig.DEV.AdditionalMasterSecurityGroups = ['sg-17746a70', 'sg-8d79e1f4'];
@@ -27,5 +28,6 @@ envConfig.DEV.Ec2KeyName = 'APP_RC_DEV';
 envConfig.DEV.RcS3StageDir = 's3://4652-5751-2377-application-dev-staging';
 envConfig.DEV.Ec2SubnetId = 'subnet-56a99422';
 envConfig.DEV.elbName = 'AWSLBRCED01';
+envConfig.DEV.coreInstanceCount = 1;
 
 module.exports = envConfig;
