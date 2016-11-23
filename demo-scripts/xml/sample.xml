@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+  <property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>{{HIVE.METASTORE.URL}}?trustServerCertificate=true&amp;amp;useSSL=true&amp;amp;requireSSL=true&amp;amp;createDatabaseIfNotExist=false</value>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>com.mysql.jdbc.Driver</value>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>{{HIVE.METASTORE.USER}}</value>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>{{HIVE.METASTORE.PW}}</value>
+  </property>
+  <property>
+    <name>datanucleus.autoCreateSchema</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>datanucleus.fixedDatastore</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>datanucleus.autoStartMechanism</name>
+    <value>SchemaTable</value>
+  </property>
+  <property>
+    <name>hive.warehouse.subdir.inherit.perms</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hive.stats.ndv.error</name>
+    <value>5.0</value>
+  </property>
+  <property>
+    <name>hive.stats.dbclass</name>
+    <value>jdbc:mysql</value>
+  </property>
+  <property>
+    <name>hive.stats.jdbcdriver</name>
+    <value>com.mysql.jdbc.Driver</value>
+  </property>
+  <property>
+    <name>hive.metastore.client.socket.timeout</name>
+    <value>3600</value>
+  </property>
+  <property>
+    <name>hive.metastore.execute.setugi</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hive.stats.autogather</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hive.server2.use.SSL</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hive.server2.keystore.path</name>
+    <value>/home/hadoop/hive/conf/self.keystore</value>
+  </property>
+  <property>
+    <name>hive.server2.keystore.password</name>
+    <value>changeit</value>
+  </property>
+  <property>
+    <name>hive.server2.authentication</name>
+    <value>CUSTOM</value>
+  </property>
+  <property>
+    <name>hive.server2.custom.authentication.class</name>
+    <value>org.finra.rc.hiveserver2.RcHiveAuthentication</value>
+  </property>
+  <property>
+    <name>hive.server2.rc.authentication.file</name>
+    <value>/home/hadoop/hive/conf/rccredentials.properties</value>
+  </property>
+  <property>
+    <name>hive.server2.enable.doAs</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hive.fetch.task.conversion</name>
+    <value>more</value>
+    <description>
+            Some select queries can be converted to single FETCH task minimizing latency.Currently the query should be single
+            sourced not having any subquery and should not have any aggregations or distincts (which incurrs RS), lateral views and joins.
+            1. minimal : SELECT STAR, FILTER on partition columns, LIMIT only
+            2. more    : SELECT, FILTER, LIMIT only (+TABLESAMPLE, virtual columns)
+        </description>
+  </property>
+  <property>
+    <name>hive.fetch.task.conversion.threshold</name>
+    <value>512000</value>
+    <description>
+            Input threshold (in bytes) for applying 'hive.fetch.task.conversion', set it to 1 gigabytes for now, default is unlimited
+            if we set too high, the JDBC will timeout when the data we query is too large. (8G will take about 5 minutes in Hive console, JDBC times out in 60s)
+            Note, this size is not for full table size if we use the partition-key but the partitioned data we are querying.
+            look at: https://issues.apache.org/jira/browse/HIVE-7397 , in hive 0.14 onward, the size will be 1G.
+        </description>
+  </property>
+  <property>
+    <name>hive.resultset.use.unique.column.names</name>
+    <value>false</value>
+  </property>
+</configuration>
