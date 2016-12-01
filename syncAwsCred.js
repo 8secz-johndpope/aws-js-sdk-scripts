@@ -4,11 +4,11 @@ let fs = require('fs');
 let https = require('https');
 
 let args = process.argv.slice(2);
-//if first arg is 1, we set one time. Otherwise(not provided or 0), refresh every hour!
+//if first arg is 0, we set one time. Otherwise(not provided or not 0), refresh every hour!
 let infinite = args[0] || 1;
-let user = args[1] || process.env.USER || 'LiHa';
-let pw = args[2] || process.env.pw;
-let role = args[3] || 'priv_aws_rc_dev_d';
+let role = args[1] || 'priv_aws_rc_dev_d';
+let user = args[2] || process.env.USER || 'LiHa';
+let pw = args[3] || process.env.pw;
 
 function refreshAwsCred() {
 	let requestBody = {
@@ -57,7 +57,7 @@ function refreshAwsCred() {
 	postRequest.on('error', (e) =>console.error(e));
 }
 
-function extracted(awsCreds) {
+function extract(awsCreds) {
 	let aws_access_key_id = 'aws_access_key_id=' + awsCreds.awsAccessKeyId;
 	let aws_secret_access_key = 'aws_secret_access_key=' + awsCreds.awsSecretKey;
 	let aws_session_token = 'aws_session_token=' + awsCreds.awsSessionToken;
@@ -65,7 +65,7 @@ function extracted(awsCreds) {
 }
 function writeCredentialsFile(awsCreds) {
 	let profile = '[default]';
-	let content = [profile, extracted(awsCreds)].join('\n');
+	let content = [profile, ...extract(awsCreds)].join('\n');
 	let fileToWrite = process.env.HOME + '/.aws/credentials';
 	console.log(`new ${fileToWrite} file content: \n` + content);
 	fs.writeFile(fileToWrite, content, (err)=> {
@@ -77,10 +77,10 @@ function writeCredentialsFile(awsCreds) {
 }
 
 refreshAwsCred();
-//if first arg is 1, we set one time. Otherwise(not provided or 0), refresh every hour!
+//if first arg is 0, we set one time. Otherwise(not provided or not 0), refresh every hour!
 if (infinite) {
 	console.log('************************ start to refresh aws credentials every hour! ************************');
-	setInterval(refreshAwsCred, 10000);
+	setInterval(refreshAwsCred, 3600000);
 }
 
 
