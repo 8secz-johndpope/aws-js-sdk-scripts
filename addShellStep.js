@@ -12,7 +12,7 @@ let args = process.argv.slice(2);
 let stepName = args[0];
 let shellFile = args[1];
 
-const RC_CLUSTER_NAME = 'RC.HIVE.ADHOC';
+const RC_CLUSTER_NAME = require('./profile/envConfig').shared.clusterName;
 
 //first get cluster id and s3 bucket prefix so that we can add step.
 Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBucket()]).then((values) => {
@@ -20,7 +20,7 @@ Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBuck
 	let bucketName = values[1];
 	const env = awsUtil.getEnvFromBucketName(bucketName);
 	const AWS_SCRIPT_RUN_JAR = 's3://elasticmapreduce/libs/script-runner/script-runner.jar';
-	const fileLocation = 's3://' + bucketName + '/RC/' + env + '/hive-scripts/' + shellFile;
+	const fileLocation = `s3://${bucketName}/RC/${env}/hive-scripts/${shellFile}`;
 	console.log(`File to execute: ${fileLocation}`);
 	let params = {
 		JobFlowId: clusterId,

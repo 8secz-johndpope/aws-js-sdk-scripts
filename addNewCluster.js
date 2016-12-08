@@ -8,7 +8,7 @@ AWS.config.update({region: 'us-east-1'});
 let envConfig = require('./profile/envConfig');
 
 let args = process.argv.slice(2);
-//the first argument should be the notify email and 2nd be the ELB name to be binded;
+//the first argument should be the notify email;
 let notifyEmail = args[0];
 
 const RC_CLUSTER_NAME = envConfig.shared.clusterName;
@@ -65,7 +65,7 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
 
 function sendBeginEmail(clusterId) {
 	const exec = require('child_process').exec;
-	let mailxCMD = 'echo clusterId: ' + clusterId + ' | mailx -s "Report Center Creation Status" ' + notifyEmail;
+	let mailxCMD = `echo clusterId: ${clusterId} | mailx -s "Report Center Creation Status" ${notifyEmail}`;
 	console.log(`Trying to send email out with cmd: ${mailxCMD}`);
 
 	exec(mailxCMD, (error, stdout, stderr) => {

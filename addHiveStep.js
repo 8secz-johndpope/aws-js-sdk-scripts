@@ -11,14 +11,14 @@ let args = process.argv.slice(2);
 let stepName = args[0];
 let hqlFile = args[1];
 
-const RC_CLUSTER_NAME = 'RC.HIVE.ADHOC';
+const RC_CLUSTER_NAME = require('./profile/envConfig').shared.clusterName;
 
 Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBucket()]).then((values) => {
     let clusterId = values[0];
     let bucketName = values[1];
     const env = awsUtil.getEnvFromBucketName(bucketName);
-    const fileLocation = 's3://' + bucketName + '/RC/' + env + '/hive-scripts/' + hqlFile;
-    let cmd = 'aws emr add-steps --cluster-id ' + clusterId + ' --steps Type=HIVE,Name="' + stepName + '",ActionOnFailure=CONTINUE,Args=[-f,' + fileLocation + ']';
+    const fileLocation = `s3://${bucketName}/RC/${env}/hive-scripts/${hqlFile}`;
+    const cmd = `aws emr add-steps --cluster-id ${clusterId} --steps Type=HIVE,Name="${stepName}",ActionOnFailure=CONTINUE,Args=[-f,${fileLocation}]`;
     console.log(`Command to execute: ${cmd}`);
     exec(cmd, (error, stdout, stderr) => {
         if (error) {
