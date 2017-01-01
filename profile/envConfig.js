@@ -3,7 +3,8 @@ envConfig.shared = {
     JobFlowRole: 'EMR_Scheduler_RC',
     ServiceRole: 'SVC_EMR_RC_SR',
     clusterName: 'RC.HIVE.ADHOC',
-    owner:'Han Li'
+    owner:'Han Li',
+    region: 'us-east-1'
 };
 
 envConfig.DEV = Object.assign({}, envConfig.shared);

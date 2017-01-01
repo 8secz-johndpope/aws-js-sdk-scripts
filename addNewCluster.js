@@ -3,10 +3,9 @@
 let AWS = require('aws-sdk');
 let awsUtil = require('./lib/awsUtil');
 let moment = require('moment');
-
-AWS.config.update({region: 'us-east-1'});
-
 let envConfig = require('./profile/envConfig');
+
+AWS.config.update({region: envConfig.shared.region});
 
 let args = process.argv.slice(2);
 //the first argument should be the notify email;
@@ -25,7 +24,7 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
 		}
 		else {
 			const env = awsUtil.getEnvFromBucketName(bucketName);
-			envParams = require('./profile/envConfig')[env];
+			envParams = envConfig[env];
 			return awsUtil.createCluster(envParams);
 		}
 	}).then(
@@ -55,7 +54,7 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
 							//now let's restart hiveserver2 to load our custom configs, given a 10 sec delay
 							setTimeout(()=> {
 								console.log(`${moment().format()} -- Restarting hive-server2 ....`);
-								let fileLocation = envParams.RcS3StageDir + '/RC/' + envParams.env + '/hive-scripts/restart-hive.sh';
+								let fileLocation = `${envParams.RcS3StageDir}/RC/${envParams.env}/hive-scripts/restart-hive.sh`;
 								awsUtil.addShellStep(newClusterId, fileLocation, 'Reload Hive Server2');
 							}, 10000);
 						}

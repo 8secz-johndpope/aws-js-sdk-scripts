@@ -2,8 +2,10 @@
 
 let AWS = require('aws-sdk');
 let awsUtil = require('./lib/awsUtil');
+let Consts = require('./profile/Consts');
+let envConfig = require('./profile/envConfig');
 
-AWS.config.update({ region: 'us-east-1' });
+AWS.config.update({ region: envConfig.shared.region});
 
 let emr = new AWS.EMR();
 
@@ -12,14 +14,13 @@ let args = process.argv.slice(2);
 let stepName = args[0];
 let shellFile = args[1];
 
-const RC_CLUSTER_NAME = require('./profile/envConfig').shared.clusterName;
+const RC_CLUSTER_NAME = envConfig.shared.clusterName;
 
 //first get cluster id and s3 bucket prefix so that we can add step.
 Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBucket()]).then((values) => {
 	let clusterId = values[0];
 	let bucketName = values[1];
 	const env = awsUtil.getEnvFromBucketName(bucketName);
-	const AWS_SCRIPT_RUN_JAR = 's3://elasticmapreduce/libs/script-runner/script-runner.jar';
 	const fileLocation = `s3://${bucketName}/RC/${env}/hive-scripts/${shellFile}`;
 	console.log(`File to execute: ${fileLocation}`);
 	let params = {
@@ -27,7 +28,7 @@ Promise.all([awsUtil.getActiveClusterId(RC_CLUSTER_NAME), awsUtil.getStagingBuck
 		Steps: [ 
 			{
 				HadoopJarStep: { 
-					Jar: AWS_SCRIPT_RUN_JAR,
+					Jar: Consts.AWS_SCRIPT_RUN_JAR,
 					Args: [
 						fileLocation
 					]
