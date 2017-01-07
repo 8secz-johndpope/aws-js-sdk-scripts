@@ -7,4 +7,4 @@ Consts.STAGE_BUCKETS = {
 Consts.AWS_SCRIPT_RUN_JAR = 's3://elasticmapreduce/libs/script-runner/script-runner.jar';
 
 //Make `Consts` immutable and expose it.
-module.export = Object.freeze(Consts);
+module.exports = Object.freeze(Consts);

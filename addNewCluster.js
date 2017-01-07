@@ -51,12 +51,12 @@ Promise.all([awsUtil.getStartingOrActiveClusterId(RC_CLUSTER_NAME), awsUtil.getS
 								console.log(`${moment().format()} -- retrieved Master instance ID: ${masterId}. Start to bind to elb: ${envParams.elbName}`);
 								awsUtil.regElbInstance(masterId, envParams.elbName);
 							});
-							//now let's restart hiveserver2 to load our custom configs, given a 10 sec delay
+							//now let's restart hiveserver2 to load our custom configs, given a 60s delay
 							setTimeout(()=> {
 								console.log(`${moment().format()} -- Restarting hive-server2 ....`);
 								let fileLocation = `${envParams.RcS3StageDir}/RC/${envParams.env}/hive-scripts/restart-hive.sh`;
 								awsUtil.addShellStep(newClusterId, fileLocation, 'Reload Hive Server2');
-							}, 10000);
+							}, 60000);
 						}
 						else {
 							if (!state || state === 'TERMINATING') {
