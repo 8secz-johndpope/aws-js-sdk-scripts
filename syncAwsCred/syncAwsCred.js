@@ -2,24 +2,32 @@
 
 let fs = require('fs');
 let https = require('https');
+let config = require('./config');
 
 let args = process.argv.slice(2);
 //if first arg is 0, we set one time. Otherwise(not provided or not 0), refresh every hour!
-let infinite = args[0] || 1;
-let role = args[1] || 'priv_aws_rc_dev_d';
-let user = args[2] || process.env.USER || 'LiHa';
-let pw = args[3] || process.env.pw;
+let infinite = config.infinite || 1;
+let role = config.role;
+let user = process.env.USER 
+let pw = process.env.pw;
+if(config.pw){
+	pw = Buffer.from(config.pw, 'base64').toString('ascii');
+}
+if(config.user){
+	user = config.user;
+}
+
 
 function refreshAwsCred() {
 	let requestBody = {
 		domain: 'NASDCORP',
 		username: user,
 		password: pw,
-		roleProviderARN: 'arn:aws:iam::465257512377:saml-provider/FINRA',
+		roleProviderARN: 'arn:aws:iam::'+config.awsAccount+':saml-provider/FINRA',
 		isRoleProviderMaint: 'false',
 		durationSeconds: '3600',
 		mfa: '',
-		roleToAssumeARN: 'arn:aws:iam::465257512377:role/' + role
+		roleToAssumeARN: 'arn:aws:iam::'+config.awsAccount+':role/' + role
 	};
 	let jsonBody = JSON.stringify(requestBody);
 	console.log('requestbody: ' + JSON.stringify(requestBody, null, 2));
